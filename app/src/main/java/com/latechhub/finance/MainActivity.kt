@@ -10,6 +10,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.ViewModelProvider
 import com.latechhub.finance.data.local.TokenStorage
 import com.latechhub.finance.data.remote.AuthRepository
+import com.latechhub.finance.ui.auth.LoginScreen
 import com.latechhub.finance.ui.navigation.FinanceNavHost
 import com.latechhub.finance.ui.session.SessionState
 import com.latechhub.finance.ui.session.SessionViewModel
@@ -49,19 +50,25 @@ fun SessionRoot(
             Text("Checking session...")
         }
 
-        SessionState.Unauthenticated -> {
-            Text("Login")
+        SessionState.Unauthenticated,
+        SessionState.LoggingIn,
+        is SessionState.Error -> {
+            LoginScreen(
+                viewModel = viewModel,
+                state = currentState
+            )
         }
 
         is SessionState.Authenticated -> {
             FinanceNavHost()
         }
 
-        is SessionState.Error -> {
-            Text("Session error: ${currentState.message}")
-        }
+
     }
 }
+
+
+
 
 
 

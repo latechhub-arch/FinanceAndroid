@@ -20,6 +20,32 @@ class SessionViewModel(
         checkSession()
     }
 
+    fun login(
+        email: String,
+        password: String
+    ) {
+        viewModelScope.launch {
+            _state.value = SessionState.LoggingIn
+
+            try {
+                val response = repository.login(
+                    email = email,
+                    password = password
+                )
+
+                _state.value = if (response.success && response.data != null) {
+                    SessionState.Authenticated(response.data.user)
+                } else {
+                    SessionState.Error(response.message)
+                }
+            } catch (e: Exception) {
+                _state.value = SessionState.Error(
+                    e.message ?: "Login failed"
+                )
+            }
+        }
+    }
+
     private fun checkSession() {
         viewModelScope.launch {
             try {
@@ -45,4 +71,5 @@ class SessionViewModel(
         }
     }
 }
+
 

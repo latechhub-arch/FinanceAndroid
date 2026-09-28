@@ -8,6 +8,8 @@ sealed interface SessionState {
 
     data object Unauthenticated : SessionState
 
+    data object LoggingIn : SessionState
+
     data class Authenticated(
         val user: User
     ) : SessionState
@@ -16,3 +18,4 @@ sealed interface SessionState {
         val message: String
     ) : SessionState
 }
+
