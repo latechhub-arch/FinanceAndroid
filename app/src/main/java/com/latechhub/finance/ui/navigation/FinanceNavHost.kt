@@ -1,10 +1,11 @@
 package com.latechhub.finance.ui.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.material3.Text
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.compose.material3.Text
+import com.latechhub.finance.ui.dashboard.DashboardScreen
 
 @Composable
 fun FinanceNavHost() {
@@ -19,7 +20,7 @@ fun FinanceNavHost() {
         }
 
         composable(NavRoutes.DASHBOARD) {
-            Text("Dashboard")
+            DashboardScreen()
         }
 
         composable(NavRoutes.TRANSACTIONS) {
@@ -31,4 +32,6 @@ fun FinanceNavHost() {
         }
     }
 }
+
+
 
