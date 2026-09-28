@@ -9,9 +9,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.ViewModelProvider
 import com.latechhub.finance.data.local.TokenStorage
+import com.latechhub.finance.data.remote.AccountRepository
 import com.latechhub.finance.data.remote.AuthRepository
 import com.latechhub.finance.data.remote.DashboardRepository
 import com.latechhub.finance.data.remote.TransactionRepository
+import com.latechhub.finance.ui.accounts.AccountViewModel
+import com.latechhub.finance.ui.accounts.AccountViewModelFactory
 import com.latechhub.finance.ui.auth.LoginScreen
 import com.latechhub.finance.ui.dashboard.DashboardViewModel
 import com.latechhub.finance.ui.dashboard.DashboardViewModelFactory
@@ -47,12 +50,18 @@ class MainActivity : ComponentActivity() {
             TransactionViewModelFactory(TransactionRepository())
         )[TransactionViewModel::class.java]
 
+        val accountViewModel = ViewModelProvider(
+            this,
+            AccountViewModelFactory(AccountRepository())
+        )[AccountViewModel::class.java]
+
         setContent {
             FinanceTheme {
                 SessionRoot(
                     viewModel = viewModel,
                     dashboardViewModel = dashboardViewModel,
-                    transactionViewModel = transactionViewModel
+                    transactionViewModel = transactionViewModel,
+                    accountViewModel = accountViewModel
                 )
             }
         }
@@ -63,7 +72,8 @@ class MainActivity : ComponentActivity() {
 fun SessionRoot(
     viewModel: SessionViewModel,
     dashboardViewModel: DashboardViewModel,
-    transactionViewModel: TransactionViewModel
+    transactionViewModel: TransactionViewModel,
+    accountViewModel: AccountViewModel
 ) {
     val state by viewModel.state.collectAsState()
 
@@ -84,11 +94,12 @@ fun SessionRoot(
         is SessionState.Authenticated -> {
             FinanceNavHost(
                 dashboardViewModel = dashboardViewModel,
-                transactionViewModel = transactionViewModel
+                transactionViewModel = transactionViewModel,
+                accountViewModel = accountViewModel,
+                onLogout = {
+                    viewModel.logout()
+                }
             )
         }
-
-
     }
 }
-

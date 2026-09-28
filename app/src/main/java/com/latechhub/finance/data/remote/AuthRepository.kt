@@ -42,7 +42,24 @@ class AuthRepository(
     fun getSavedAccessToken(): Flow<String?> {
         return tokenStorage.accessToken
     }
+
+    suspend fun logout(): ApiResponse<Unit>? {
+        val refreshToken = tokenStorage.refreshToken.first()
+
+        return try {
+            if (!refreshToken.isNullOrBlank()) {
+                authApi.logout(
+                    RefreshTokenRequest(refreshToken)
+                )
+            } else {
+                null
+            }
+        } finally {
+            tokenStorage.clearTokens()
+        }
+    }
 }
+
 
 
 

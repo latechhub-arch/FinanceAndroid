@@ -20,36 +20,64 @@ class AuthAuthenticator(
             return null
         }
 
-        return runBlocking {
-            try {
-                val refreshToken = tokenStorage.refreshToken.first()
-                    ?: return@runBlocking null
+        return synchronized(this) {
+            runBlocking {
+                try {
+                    val requestAccessToken =
+                        response.request.header("Authorization")
+                            ?.removePrefix("Bearer ")
+                            ?.trim()
 
-                val refreshResponse = RetrofitClient.refreshApi.refresh(
-                    RefreshTokenRequest(refreshToken)
-                )
+                    val currentAccessToken =
+                        tokenStorage.accessToken.first()
 
-                if (!refreshResponse.success || refreshResponse.data == null) {
-                    tokenStorage.clearTokens()
-                    return@runBlocking null
-                }
+                    if (
+                        !currentAccessToken.isNullOrBlank() &&
+                        currentAccessToken != requestAccessToken
+                    ) {
+                        return@runBlocking response.request
+                            .newBuilder()
+                            .header(
+                                "Authorization",
+                                "Bearer $currentAccessToken"
+                            )
+                            .build()
+                    }
 
-                val authData = refreshResponse.data
+                    val refreshToken =
+                        tokenStorage.refreshToken.first()
+                            ?: return@runBlocking null
 
-                tokenStorage.saveTokens(
-                    accessToken = authData.accessToken,
-                    refreshToken = authData.refreshToken
-                )
+                    val refreshResponse =
+                        RetrofitClient.refreshApi.refresh(
+                            RefreshTokenRequest(refreshToken)
+                        )
 
-                response.request
-                    .newBuilder()
-                    .header(
-                        "Authorization",
-                        "Bearer ${authData.accessToken}"
+                    if (
+                        !refreshResponse.success ||
+                        refreshResponse.data == null
+                    ) {
+                        tokenStorage.clearTokens()
+                        return@runBlocking null
+                    }
+
+                    val authData = refreshResponse.data
+
+                    tokenStorage.saveTokens(
+                        accessToken = authData.accessToken,
+                        refreshToken = authData.refreshToken
                     )
-                    .build()
-            } catch (e: Exception) {
-                null
+
+                    response.request
+                        .newBuilder()
+                        .header(
+                            "Authorization",
+                            "Bearer ${authData.accessToken}"
+                        )
+                        .build()
+                } catch (e: Exception) {
+                    null
+                }
             }
         }
     }

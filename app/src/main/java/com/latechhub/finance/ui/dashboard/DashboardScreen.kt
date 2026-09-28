@@ -25,7 +25,10 @@ import java.util.Locale
 @Composable
 fun DashboardScreen(
     viewModel: DashboardViewModel,
-    transactionViewModel: TransactionViewModel
+    transactionViewModel: TransactionViewModel,
+    onTransactionsClick: () -> Unit,
+    onAccountsClick: () -> Unit,
+    onLogout: () -> Unit
 ) {
     val state by viewModel.state.collectAsState()
     val transactionState by transactionViewModel.state.collectAsState()
@@ -166,6 +169,29 @@ fun DashboardScreen(
                 Spacer(modifier = Modifier.height(24.dp))
 
                 Text(
+                    text = "Accounts",
+                    style = MaterialTheme.typography.titleMedium
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Text(
+                    text = "${dashboard.accounts.activeAccounts} active of ${dashboard.accounts.totalAccounts} accounts",
+                    style = MaterialTheme.typography.bodySmall
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Button(
+                    onClick = onAccountsClick,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("View All Accounts")
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                Text(
                     text = "Recent Transactions",
                     style = MaterialTheme.typography.titleMedium
                 )
@@ -253,6 +279,24 @@ fun DashboardScreen(
                         }
                     }
                 }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Button(
+                    onClick = onTransactionsClick,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("View All Transactions")
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Button(
+                    onClick = onLogout,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Logout")
+                }
             }
         }
     }
@@ -265,3 +309,14 @@ private fun formatKes(amount: Double): String {
         amount
     )
 }
+
+
+
+
+
+
+
+
+
+
+

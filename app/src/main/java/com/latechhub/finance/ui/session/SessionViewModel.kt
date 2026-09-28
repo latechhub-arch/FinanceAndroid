@@ -46,6 +46,18 @@ class SessionViewModel(
         }
     }
 
+    fun logout() {
+        viewModelScope.launch {
+            try {
+                repository.logout()
+            } catch (e: Exception) {
+                // Local tokens are cleared by the repository even if the API call fails.
+            } finally {
+                _state.value = SessionState.Unauthenticated
+            }
+        }
+    }
+
     private fun checkSession() {
         viewModelScope.launch {
             try {
@@ -71,5 +83,6 @@ class SessionViewModel(
         }
     }
 }
+
 
 

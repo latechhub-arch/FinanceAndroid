@@ -11,7 +11,14 @@ import kotlinx.coroutines.launch
 
 sealed interface TransactionState {
     data object Loading : TransactionState
-    data class Success(val transactions: List<TransactionItem>) : TransactionState
+
+    data class Success(
+        val transactions: List<TransactionItem>,
+        val page: Int,
+        val totalPages: Int,
+        val total: Int
+    ) : TransactionState
+
     data class Error(val message: String) : TransactionState
 }
 
@@ -30,16 +37,26 @@ class TransactionViewModel(
     }
 
     fun loadTransactions() {
+        loadPage(1)
+    }
+
+    fun loadPage(page: Int) {
         viewModelScope.launch {
             _state.value = TransactionState.Loading
 
             try {
-                val response = repository.getRecentTransactions()
+                val response = repository.getTransactions(
+                    page = page,
+                    limit = 20
+                )
 
                 _state.value =
                     if (response.success && response.data != null) {
                         TransactionState.Success(
-                            response.data.transactions
+                            transactions = response.data.transactions,
+                            page = response.data.pagination.page,
+                            totalPages = response.data.pagination.totalPages,
+                            total = response.data.pagination.total
                         )
                     } else {
                         TransactionState.Error(response.message)

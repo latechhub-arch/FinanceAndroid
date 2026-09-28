@@ -6,6 +6,7 @@ import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFact
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 
 object RetrofitClient {
@@ -35,7 +36,13 @@ object RetrofitClient {
     fun initialize(context: Context) {
         val tokenStorage = TokenStorage(context.applicationContext)
 
+        val loggingInterceptor = HttpLoggingInterceptor().apply {
+            level = HttpLoggingInterceptor.Level.BASIC
+            redactHeader("Authorization")
+        }
+
         okHttpClient = OkHttpClient.Builder()
+            .addInterceptor(loggingInterceptor)
             .addInterceptor(AuthInterceptor(tokenStorage))
             .authenticator(AuthAuthenticator(tokenStorage))
             .build()
@@ -59,4 +66,10 @@ object RetrofitClient {
 
     val transactionApi: TransactionApi
         get() = retrofit.create(TransactionApi::class.java)
+
+    val accountApi: AccountApi
+        get() = retrofit.create(AccountApi::class.java)
 }
+
+
+
