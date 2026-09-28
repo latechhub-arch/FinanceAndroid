@@ -36,9 +36,8 @@ object RetrofitClient {
         val tokenStorage = TokenStorage(context.applicationContext)
 
         okHttpClient = OkHttpClient.Builder()
-            .authenticator(
-                AuthAuthenticator(tokenStorage)
-            )
+            .addInterceptor(AuthInterceptor(tokenStorage))
+            .authenticator(AuthAuthenticator(tokenStorage))
             .build()
 
         retrofit = Retrofit.Builder()
@@ -54,4 +53,10 @@ object RetrofitClient {
 
     val authApi: AuthApi
         get() = retrofit.create(AuthApi::class.java)
+
+    val dashboardApi: DashboardApi
+        get() = retrofit.create(DashboardApi::class.java)
+
+    val transactionApi: TransactionApi
+        get() = retrofit.create(TransactionApi::class.java)
 }

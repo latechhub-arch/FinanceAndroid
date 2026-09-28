@@ -6,9 +6,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.latechhub.finance.ui.dashboard.DashboardScreen
+import com.latechhub.finance.ui.dashboard.DashboardViewModel
+import com.latechhub.finance.ui.dashboard.TransactionViewModel
 
 @Composable
-fun FinanceNavHost() {
+fun FinanceNavHost(
+    dashboardViewModel: DashboardViewModel,
+    transactionViewModel: TransactionViewModel
+) {
     val navController = rememberNavController()
 
     NavHost(
@@ -20,7 +25,10 @@ fun FinanceNavHost() {
         }
 
         composable(NavRoutes.DASHBOARD) {
-            DashboardScreen()
+            DashboardScreen(
+                viewModel = dashboardViewModel,
+                transactionViewModel = transactionViewModel
+            )
         }
 
         composable(NavRoutes.TRANSACTIONS) {
@@ -32,6 +40,4 @@ fun FinanceNavHost() {
         }
     }
 }
-
-
 
