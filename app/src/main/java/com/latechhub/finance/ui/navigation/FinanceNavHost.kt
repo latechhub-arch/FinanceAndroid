@@ -3,6 +3,7 @@ package com.latechhub.finance.ui.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.collectAsState
 import androidx.compose.material3.Text
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -49,12 +50,13 @@ fun FinanceNavHost(
         }
 
         composable(NavRoutes.ACCOUNTS) {
-            val accountState = accountViewModel.state.value
+            val accountState = accountViewModel.state.collectAsState().value
 
             when (accountState) {
                 is AccountState.Success -> {
                     AccountsScreen(
-                        accounts = accountState.accounts
+                        accounts = accountState.accounts,
+                        viewModel = accountViewModel
                     )
                 }
 
@@ -100,3 +102,5 @@ fun FinanceNavHost(
         }
     }
 }
+
+
