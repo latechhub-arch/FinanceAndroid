@@ -14,6 +14,9 @@ import com.latechhub.finance.ui.accounts.AccountsScreen
 import com.latechhub.finance.ui.dashboard.DashboardScreen
 import com.latechhub.finance.ui.dashboard.DashboardViewModel
 import com.latechhub.finance.ui.dashboard.TransactionViewModel
+import com.latechhub.finance.ui.budgets.BudgetState
+import com.latechhub.finance.ui.budgets.BudgetViewModel
+import com.latechhub.finance.ui.budgets.BudgetScreen
 import com.latechhub.finance.ui.transactions.TransactionDetailsScreen
 import com.latechhub.finance.ui.transactions.TransactionsScreen
 
@@ -22,6 +25,7 @@ fun FinanceNavHost(
     dashboardViewModel: DashboardViewModel,
     transactionViewModel: TransactionViewModel,
     accountViewModel: AccountViewModel,
+    budgetViewModel: BudgetViewModel,
     onLogout: () -> Unit
 ) {
     val navController = rememberNavController()
@@ -44,6 +48,9 @@ fun FinanceNavHost(
                 },
                 onAccountsClick = {
                     navController.navigate(NavRoutes.ACCOUNTS)
+                },
+                onBudgetsClick = {
+                    navController.navigate(NavRoutes.BUDGETS)
                 },
                 onLogout = onLogout
             )
@@ -70,6 +77,26 @@ fun FinanceNavHost(
             }
         }
 
+        composable(NavRoutes.BUDGETS) {
+            val budgetState = budgetViewModel.state.collectAsState().value
+
+            when (budgetState) {
+                is BudgetState.Success -> {
+                    BudgetScreen(
+                        budgets = budgetState.budgets,
+                        viewModel = budgetViewModel
+                    )
+                }
+
+                BudgetState.Loading -> {
+                    Text("Loading budgets...")
+                }
+
+                is BudgetState.Error -> {
+                    Text(budgetState.message)
+                }
+            }
+        }
         composable(NavRoutes.TRANSACTIONS) {
             TransactionsScreen(
                 transactionViewModel = transactionViewModel,
@@ -87,10 +114,24 @@ fun FinanceNavHost(
 
         composable(NavRoutes.TRANSACTION_DETAILS) {
             val transaction = selectedTransaction.value
+            val accountState = accountViewModel.state.collectAsState().value
 
-            if (transaction != null) {
+            if (transaction != null && accountState is AccountState.Success) {
                 TransactionDetailsScreen(
-                    transaction = transaction
+                    transaction = transaction,
+                    viewModel = transactionViewModel,
+                    accounts = accountState.accounts,
+                    onTransactionUpdated = { updated ->
+                        selectedTransaction.value = updated
+                    }
+                )
+            } else if (transaction != null) {
+                Text(
+                    if (accountState is AccountState.Error) {
+                        accountState.message
+                    } else {
+                        "Loading accounts..."
+                    }
                 )
             } else {
                 Text("Transaction not available")
@@ -102,5 +143,12 @@ fun FinanceNavHost(
         }
     }
 }
+
+
+
+
+
+
+
 
 

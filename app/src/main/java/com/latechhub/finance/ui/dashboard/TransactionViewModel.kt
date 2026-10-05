@@ -36,6 +36,33 @@ class TransactionViewModel(
         loadTransactions()
     }
 
+    fun updateTransaction(
+        id: String,
+        request: com.latechhub.finance.data.remote.UpdateTransactionRequest,
+        onResult: (Boolean, String, com.latechhub.finance.data.remote.TransactionItem?) -> Unit
+    ) {
+        viewModelScope.launch {
+            try {
+                val response = repository.updateTransaction(id, request)
+                if (response.success && response.data != null) {
+                    val updatedTransaction = response.data
+                    val currentPage =
+                        (state.value as? TransactionState.Success)?.page ?: 1
+                    loadPage(currentPage)
+                    onResult(true, response.message, updatedTransaction)
+                } else {
+                    onResult(false, response.message, null)
+                }
+            } catch (e: Exception) {
+                onResult(
+                    false,
+                    e.message ?: "Unable to update transaction",
+                    null
+                )
+            }
+        }
+    }
+
     fun loadTransactions() {
         loadPage(1)
     }

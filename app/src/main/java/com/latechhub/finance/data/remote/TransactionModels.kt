@@ -36,6 +36,18 @@ data class TransactionItem(
 )
 
 @Serializable
+data class UpdateTransactionRequest(
+    val accountId: String? = null,
+    val type: String? = null,
+    val category: String? = null,
+    val amount: Double? = null,
+    val description: String? = null,
+    val transactionDate: String? = null,
+    val reference: String? = null,
+    val transferAccountId: String? = null
+)
+
+@Serializable
 data class TransactionAccount(
     val id: String,
     val name: String,
@@ -46,3 +58,5 @@ data class TransactionAccount(
     val balance: Double,
     val isActive: Boolean
 )
+
+

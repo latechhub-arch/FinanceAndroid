@@ -11,10 +11,13 @@ import androidx.lifecycle.ViewModelProvider
 import com.latechhub.finance.data.local.TokenStorage
 import com.latechhub.finance.data.remote.AccountRepository
 import com.latechhub.finance.data.remote.AuthRepository
+import com.latechhub.finance.data.remote.BudgetRepository
 import com.latechhub.finance.data.remote.DashboardRepository
 import com.latechhub.finance.data.remote.TransactionRepository
 import com.latechhub.finance.ui.accounts.AccountViewModel
 import com.latechhub.finance.ui.accounts.AccountViewModelFactory
+import com.latechhub.finance.ui.budgets.BudgetViewModel
+import com.latechhub.finance.ui.budgets.BudgetViewModelFactory
 import com.latechhub.finance.ui.auth.LoginScreen
 import com.latechhub.finance.ui.dashboard.DashboardViewModel
 import com.latechhub.finance.ui.dashboard.DashboardViewModelFactory
@@ -54,6 +57,10 @@ class MainActivity : ComponentActivity() {
             this,
             AccountViewModelFactory(AccountRepository())
         )[AccountViewModel::class.java]
+        val budgetViewModel = ViewModelProvider(
+            this,
+            BudgetViewModelFactory(BudgetRepository())
+        )[BudgetViewModel::class.java]
 
         setContent {
             FinanceTheme {
@@ -61,7 +68,8 @@ class MainActivity : ComponentActivity() {
                     viewModel = viewModel,
                     dashboardViewModel = dashboardViewModel,
                     transactionViewModel = transactionViewModel,
-                    accountViewModel = accountViewModel
+                    accountViewModel = accountViewModel,
+                    budgetViewModel = budgetViewModel
                 )
             }
         }
@@ -73,7 +81,8 @@ fun SessionRoot(
     viewModel: SessionViewModel,
     dashboardViewModel: DashboardViewModel,
     transactionViewModel: TransactionViewModel,
-    accountViewModel: AccountViewModel
+    accountViewModel: AccountViewModel,
+    budgetViewModel: BudgetViewModel
 ) {
     val state by viewModel.state.collectAsState()
 
@@ -96,6 +105,7 @@ fun SessionRoot(
                 dashboardViewModel = dashboardViewModel,
                 transactionViewModel = transactionViewModel,
                 accountViewModel = accountViewModel,
+                budgetViewModel = budgetViewModel,
                 onLogout = {
                     viewModel.logout()
                 }
@@ -103,3 +113,12 @@ fun SessionRoot(
         }
     }
 }
+
+
+
+
+
+
+
+
+

@@ -13,6 +13,16 @@ class TransactionRepository {
         )
     }
 
+    suspend fun updateTransaction(
+        id: String,
+        request: UpdateTransactionRequest
+    ): ApiResponse<TransactionItem> {
+        return transactionApi.updateTransaction(
+            id = id,
+            request = request
+        )
+    }
+
     suspend fun getRecentTransactions(
         limit: Int = 5
     ): ApiResponse<TransactionListData> {

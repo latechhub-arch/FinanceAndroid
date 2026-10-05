@@ -28,6 +28,7 @@ fun DashboardScreen(
     transactionViewModel: TransactionViewModel,
     onTransactionsClick: () -> Unit,
     onAccountsClick: () -> Unit,
+    onBudgetsClick: () -> Unit,
     onLogout: () -> Unit
 ) {
     val state by viewModel.state.collectAsState()
@@ -175,10 +176,18 @@ fun DashboardScreen(
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                Text(
-                    text = "${dashboard.accounts.activeAccounts} active of ${dashboard.accounts.totalAccounts} accounts",
-                    style = MaterialTheme.typography.bodySmall
-                )
+                Card(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column(
+                        modifier = Modifier.padding(16.dp)
+                    ) {
+                        Text(
+                            text = "View and manage your accounts",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+                }
 
                 Spacer(modifier = Modifier.height(12.dp))
 
@@ -198,85 +207,16 @@ fun DashboardScreen(
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                when (val currentTransactionState = transactionState) {
-                    TransactionState.Loading -> {
-                        CircularProgressIndicator()
-                    }
-
-                    is TransactionState.Error -> {
+                Card(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column(
+                        modifier = Modifier.padding(16.dp)
+                    ) {
                         Text(
-                            text = currentTransactionState.message,
+                            text = "View and manage your transactions",
                             style = MaterialTheme.typography.bodyMedium
                         )
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        Button(
-                            onClick = {
-                                transactionViewModel.loadTransactions()
-                            }
-                        ) {
-                            Text("Retry")
-                        }
-                    }
-
-                    is TransactionState.Success -> {
-                        if (currentTransactionState.transactions.isEmpty()) {
-                            Text(
-                                text = "No transactions yet.",
-                                style = MaterialTheme.typography.bodyMedium
-                            )
-                        } else {
-                            currentTransactionState.transactions.forEach { transaction ->
-                                Card(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(bottom = 8.dp)
-                                ) {
-                                    Column(
-                                        modifier = Modifier.padding(16.dp)
-                                    ) {
-                                        Text(
-                                            text = transaction.description
-                                                ?: transaction.category
-                                                ?: transaction.type,
-                                            style = MaterialTheme.typography.titleSmall
-                                        )
-
-                                        Spacer(
-                                            modifier = Modifier.height(4.dp)
-                                        )
-
-                                        Text(
-                                            text = transaction.account.name,
-                                            style = MaterialTheme.typography.bodySmall
-                                        )
-
-                                        Spacer(
-                                            modifier = Modifier.height(4.dp)
-                                        )
-
-                                        Text(
-                                            text = "${transaction.account.currency} ${
-                                                if (transaction.type == "INCOME") "+" else "-"
-                                            }${String.format(Locale.US, "%,.2f", transaction.amount)}",
-                                            style = MaterialTheme.typography.titleMedium
-                                        )
-
-                                        Spacer(
-                                            modifier = Modifier.height(4.dp)
-                                        )
-
-                                        Text(
-                                            text = transaction.transactionDate
-                                                .replace("T", " ")
-                                                .take(16),
-                                            style = MaterialTheme.typography.bodySmall
-                                        )
-                                    }
-                                }
-                            }
-                        }
                     }
                 }
 
@@ -287,6 +227,37 @@ fun DashboardScreen(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text("View All Transactions")
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                Text(
+                    text = "Budgets",
+                    style = MaterialTheme.typography.titleMedium
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Card(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column(
+                        modifier = Modifier.padding(16.dp)
+                    ) {
+                        Text(
+                            text = "View and manage your budgets",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Button(
+                    onClick = onBudgetsClick,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("View All Budgets")
                 }
 
                 Spacer(modifier = Modifier.height(12.dp))
@@ -309,14 +280,3 @@ private fun formatKes(amount: Double): String {
         amount
     )
 }
-
-
-
-
-
-
-
-
-
-
-
