@@ -11,12 +11,16 @@ import androidx.navigation.compose.rememberNavController
 import com.latechhub.finance.ui.accounts.AccountState
 import com.latechhub.finance.ui.accounts.AccountViewModel
 import com.latechhub.finance.ui.accounts.AccountsScreen
+import com.latechhub.finance.ui.budgets.BudgetScreen
+import com.latechhub.finance.ui.budgets.BudgetState
+import com.latechhub.finance.ui.budgets.BudgetViewModel
 import com.latechhub.finance.ui.dashboard.DashboardScreen
 import com.latechhub.finance.ui.dashboard.DashboardViewModel
 import com.latechhub.finance.ui.dashboard.TransactionViewModel
-import com.latechhub.finance.ui.budgets.BudgetState
-import com.latechhub.finance.ui.budgets.BudgetViewModel
-import com.latechhub.finance.ui.budgets.BudgetScreen
+import com.latechhub.finance.ui.savingsgoals.SavingsGoalDetailsScreen
+import com.latechhub.finance.ui.savingsgoals.SavingsGoalScreen
+import com.latechhub.finance.ui.savingsgoals.SavingsGoalState
+import com.latechhub.finance.ui.savingsgoals.SavingsGoalViewModel
 import com.latechhub.finance.ui.transactions.TransactionDetailsScreen
 import com.latechhub.finance.ui.transactions.TransactionsScreen
 
@@ -26,10 +30,20 @@ fun FinanceNavHost(
     transactionViewModel: TransactionViewModel,
     accountViewModel: AccountViewModel,
     budgetViewModel: BudgetViewModel,
+    savingsGoalViewModel: SavingsGoalViewModel,
     onLogout: () -> Unit
 ) {
     val navController = rememberNavController()
-    val selectedTransaction = remember { mutableStateOf<com.latechhub.finance.data.remote.TransactionItem?>(null) }
+
+    val selectedTransaction =
+        remember {
+            mutableStateOf<com.latechhub.finance.data.remote.TransactionItem?>(null)
+        }
+
+    val selectedSavingsGoal =
+        remember {
+            mutableStateOf<com.latechhub.finance.data.remote.SavingsGoal?>(null)
+        }
 
     NavHost(
         navController = navController,
@@ -51,6 +65,9 @@ fun FinanceNavHost(
                 },
                 onBudgetsClick = {
                     navController.navigate(NavRoutes.BUDGETS)
+                },
+                onSavingsGoalsClick = {
+                    navController.navigate(NavRoutes.SAVINGS_GOALS)
                 },
                 onLogout = onLogout
             )
@@ -97,11 +114,59 @@ fun FinanceNavHost(
                 }
             }
         }
+
+        composable(NavRoutes.SAVINGS_GOALS) {
+            val savingsGoalState = savingsGoalViewModel.state
+
+            when (savingsGoalState) {
+                is SavingsGoalState.Success -> {
+                    SavingsGoalScreen(
+                        goals = savingsGoalState.goals,
+                        viewModel = savingsGoalViewModel,
+                        onGoalClick = { goal ->
+                            selectedSavingsGoal.value = goal
+                            navController.navigate(
+                                NavRoutes.SAVINGS_GOAL_DETAILS.replace(
+                                    "{goalId}",
+                                    goal.id
+                                )
+                            )
+                        }
+                    )
+                }
+
+                SavingsGoalState.Loading -> {
+                    Text("Loading savings goals...")
+                }
+
+                is SavingsGoalState.Error -> {
+                    Text(savingsGoalState.message)
+                }
+            }
+        }
+
+        composable(NavRoutes.SAVINGS_GOAL_DETAILS) {
+            val goal = selectedSavingsGoal.value
+
+            if (goal != null) {
+                SavingsGoalDetailsScreen(
+                    goal = goal,
+                    viewModel = savingsGoalViewModel,
+                    onBack = {
+                        navController.popBackStack()
+                    }
+                )
+            } else {
+                Text("Savings goal not available")
+            }
+        }
+
         composable(NavRoutes.TRANSACTIONS) {
             TransactionsScreen(
                 transactionViewModel = transactionViewModel,
                 onTransactionClick = { transaction ->
                     selectedTransaction.value = transaction
+
                     navController.navigate(
                         NavRoutes.TRANSACTION_DETAILS.replace(
                             "{transactionId}",
@@ -116,7 +181,10 @@ fun FinanceNavHost(
             val transaction = selectedTransaction.value
             val accountState = accountViewModel.state.collectAsState().value
 
-            if (transaction != null && accountState is AccountState.Success) {
+            if (
+                transaction != null &&
+                accountState is AccountState.Success
+            ) {
                 TransactionDetailsScreen(
                     transaction = transaction,
                     viewModel = transactionViewModel,
@@ -143,12 +211,3 @@ fun FinanceNavHost(
         }
     }
 }
-
-
-
-
-
-
-
-
-

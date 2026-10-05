@@ -14,6 +14,7 @@ import com.latechhub.finance.data.remote.AuthRepository
 import com.latechhub.finance.data.remote.BudgetRepository
 import com.latechhub.finance.data.remote.DashboardRepository
 import com.latechhub.finance.data.remote.TransactionRepository
+import com.latechhub.finance.data.remote.SavingsGoalRepository
 import com.latechhub.finance.ui.accounts.AccountViewModel
 import com.latechhub.finance.ui.accounts.AccountViewModelFactory
 import com.latechhub.finance.ui.budgets.BudgetViewModel
@@ -24,6 +25,8 @@ import com.latechhub.finance.ui.dashboard.DashboardViewModelFactory
 import com.latechhub.finance.ui.dashboard.TransactionViewModel
 import com.latechhub.finance.ui.dashboard.TransactionViewModelFactory
 import com.latechhub.finance.ui.navigation.FinanceNavHost
+import com.latechhub.finance.ui.savingsgoals.SavingsGoalViewModel
+import com.latechhub.finance.ui.savingsgoals.SavingsGoalViewModelFactory
 import com.latechhub.finance.ui.session.SessionState
 import com.latechhub.finance.ui.session.SessionViewModel
 import com.latechhub.finance.ui.session.SessionViewModelFactory
@@ -62,6 +65,11 @@ class MainActivity : ComponentActivity() {
             BudgetViewModelFactory(BudgetRepository())
         )[BudgetViewModel::class.java]
 
+        val savingsGoalViewModel = ViewModelProvider(
+            this,
+            SavingsGoalViewModelFactory(SavingsGoalRepository())
+        )[SavingsGoalViewModel::class.java]
+
         setContent {
             FinanceTheme {
                 SessionRoot(
@@ -69,7 +77,8 @@ class MainActivity : ComponentActivity() {
                     dashboardViewModel = dashboardViewModel,
                     transactionViewModel = transactionViewModel,
                     accountViewModel = accountViewModel,
-                    budgetViewModel = budgetViewModel
+                    budgetViewModel = budgetViewModel,
+                    savingsGoalViewModel = savingsGoalViewModel
                 )
             }
         }
@@ -82,7 +91,8 @@ fun SessionRoot(
     dashboardViewModel: DashboardViewModel,
     transactionViewModel: TransactionViewModel,
     accountViewModel: AccountViewModel,
-    budgetViewModel: BudgetViewModel
+    budgetViewModel: BudgetViewModel,
+    savingsGoalViewModel: SavingsGoalViewModel
 ) {
     val state by viewModel.state.collectAsState()
 
@@ -106,6 +116,7 @@ fun SessionRoot(
                 transactionViewModel = transactionViewModel,
                 accountViewModel = accountViewModel,
                 budgetViewModel = budgetViewModel,
+                savingsGoalViewModel = savingsGoalViewModel,
                 onLogout = {
                     viewModel.logout()
                 }
@@ -113,12 +124,3 @@ fun SessionRoot(
         }
     }
 }
-
-
-
-
-
-
-
-
-

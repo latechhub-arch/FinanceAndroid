@@ -29,6 +29,7 @@ fun DashboardScreen(
     onTransactionsClick: () -> Unit,
     onAccountsClick: () -> Unit,
     onBudgetsClick: () -> Unit,
+    onSavingsGoalsClick: () -> Unit,
     onLogout: () -> Unit
 ) {
     val state by viewModel.state.collectAsState()
@@ -258,6 +259,37 @@ fun DashboardScreen(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text("View All Budgets")
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                Text(
+                    text = "Savings Goals",
+                    style = MaterialTheme.typography.titleMedium
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Card(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column(
+                        modifier = Modifier.padding(16.dp)
+                    ) {
+                        Text(
+                            text = "View and manage your savings goals",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Button(
+                    onClick = onSavingsGoalsClick,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("View All Savings Goals")
                 }
 
                 Spacer(modifier = Modifier.height(12.dp))
