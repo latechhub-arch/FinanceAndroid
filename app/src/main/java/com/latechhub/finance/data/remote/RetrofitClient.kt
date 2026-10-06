@@ -78,4 +78,8 @@ object RetrofitClient {
 
     val reportApi: ReportApi
         get() = retrofit.create(ReportApi::class.java)
+
+    val recurringTransactionApi: RecurringTransactionApi
+        get() = retrofit.create(RecurringTransactionApi::class.java)
 }
+

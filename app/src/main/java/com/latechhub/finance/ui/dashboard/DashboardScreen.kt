@@ -1,4 +1,4 @@
-package com.latechhub.finance.ui.dashboard
+﻿package com.latechhub.finance.ui.dashboard
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.rememberScrollState
@@ -29,6 +29,7 @@ fun DashboardScreen(
     onTransactionsClick: () -> Unit,
     onAccountsClick: () -> Unit,
     onBudgetsClick: () -> Unit,
+    onRecurringTransactionsClick: () -> Unit,
     onSavingsGoalsClick: () -> Unit,
     onReportsClick: () -> Unit,
     onLogout: () -> Unit
@@ -263,6 +264,36 @@ fun DashboardScreen(
                 }
 
                 Spacer(modifier = Modifier.height(24.dp))
+                Text(
+                    text = "Recurring Transactions",
+                    style = MaterialTheme.typography.titleMedium
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Card(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column(
+                        modifier = Modifier.padding(16.dp)
+                    ) {
+                        Text(
+                            text = "View and manage your recurring income and expenses",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Button(
+                    onClick = onRecurringTransactionsClick,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("View Recurring Transactions")
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
 
                 Text(
                     text = "Savings Goals",
@@ -344,3 +375,7 @@ private fun formatKes(amount: Double): String {
         amount
     )
 }
+
+
+
+

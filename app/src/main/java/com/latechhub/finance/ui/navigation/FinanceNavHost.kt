@@ -1,4 +1,4 @@
-package com.latechhub.finance.ui.navigation
+﻿package com.latechhub.finance.ui.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -23,6 +23,9 @@ import com.latechhub.finance.ui.savingsgoals.SavingsGoalState
 import com.latechhub.finance.ui.savingsgoals.SavingsGoalViewModel
 import com.latechhub.finance.ui.reports.ReportViewModel
 import com.latechhub.finance.ui.reports.ReportsScreen
+import com.latechhub.finance.ui.recurringtransactions.RecurringTransactionScreen
+import com.latechhub.finance.ui.recurringtransactions.RecurringTransactionState
+import com.latechhub.finance.ui.recurringtransactions.RecurringTransactionViewModel
 import com.latechhub.finance.ui.transactions.TransactionDetailsScreen
 import com.latechhub.finance.ui.transactions.TransactionsScreen
 
@@ -34,6 +37,7 @@ fun FinanceNavHost(
     budgetViewModel: BudgetViewModel,
     savingsGoalViewModel: SavingsGoalViewModel,
     reportViewModel: ReportViewModel,
+    recurringTransactionViewModel: RecurringTransactionViewModel,
     onLogout: () -> Unit
 ) {
     val navController = rememberNavController()
@@ -68,6 +72,9 @@ fun FinanceNavHost(
                 },
                 onBudgetsClick = {
                     navController.navigate(NavRoutes.BUDGETS)
+                },
+                onRecurringTransactionsClick = {
+                    navController.navigate(NavRoutes.RECURRING_TRANSACTIONS)
                 },
                 onSavingsGoalsClick = {
                     navController.navigate(NavRoutes.SAVINGS_GOALS)
@@ -121,6 +128,41 @@ fun FinanceNavHost(
             }
         }
 
+        composable(NavRoutes.RECURRING_TRANSACTIONS) {
+            val recurringState =
+                recurringTransactionViewModel.state.collectAsState().value
+            val accountState = accountViewModel.state.collectAsState().value
+
+            when (recurringState) {
+                is RecurringTransactionState.Success -> {
+                    when (accountState) {
+                        is AccountState.Success -> {
+                            RecurringTransactionScreen(
+                                recurringTransactions = recurringState.recurringTransactions,
+                                accounts = accountState.accounts,
+                                viewModel = recurringTransactionViewModel
+                            )
+                        }
+
+                        AccountState.Loading -> {
+                            Text("Loading accounts...")
+                        }
+
+                        is AccountState.Error -> {
+                            Text(accountState.message)
+                        }
+                    }
+                }
+
+                RecurringTransactionState.Loading -> {
+                    Text("Loading recurring transactions...")
+                }
+
+                is RecurringTransactionState.Error -> {
+                    Text(recurringState.message)
+                }
+            }
+        }
         composable(NavRoutes.REPORTS) {
             ReportsScreen(
                 viewModel = reportViewModel
@@ -223,6 +265,9 @@ fun FinanceNavHost(
         }
     }
 }
+
+
+
 
 
 

@@ -1,4 +1,4 @@
-package com.latechhub.finance
+﻿package com.latechhub.finance
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -16,6 +16,7 @@ import com.latechhub.finance.data.remote.DashboardRepository
 import com.latechhub.finance.data.remote.TransactionRepository
 import com.latechhub.finance.data.remote.SavingsGoalRepository
 import com.latechhub.finance.data.remote.ReportRepository
+import com.latechhub.finance.data.remote.RecurringTransactionRepository
 import com.latechhub.finance.ui.accounts.AccountViewModel
 import com.latechhub.finance.ui.accounts.AccountViewModelFactory
 import com.latechhub.finance.ui.budgets.BudgetViewModel
@@ -30,6 +31,8 @@ import com.latechhub.finance.ui.savingsgoals.SavingsGoalViewModel
 import com.latechhub.finance.ui.savingsgoals.SavingsGoalViewModelFactory
 import com.latechhub.finance.ui.reports.ReportViewModel
 import com.latechhub.finance.ui.reports.ReportViewModelFactory
+import com.latechhub.finance.ui.recurringtransactions.RecurringTransactionViewModel
+import com.latechhub.finance.ui.recurringtransactions.RecurringTransactionViewModelFactory
 import com.latechhub.finance.ui.session.SessionState
 import com.latechhub.finance.ui.session.SessionViewModel
 import com.latechhub.finance.ui.session.SessionViewModelFactory
@@ -79,6 +82,11 @@ class MainActivity : ComponentActivity() {
             ReportViewModelFactory(ReportRepository())
         )[ReportViewModel::class.java]
 
+        val recurringTransactionViewModel = ViewModelProvider(
+            this,
+            RecurringTransactionViewModelFactory(RecurringTransactionRepository())
+        )[RecurringTransactionViewModel::class.java]
+
         setContent {
             FinanceTheme {
                 SessionRoot(
@@ -88,7 +96,8 @@ class MainActivity : ComponentActivity() {
                     accountViewModel = accountViewModel,
                     budgetViewModel = budgetViewModel,
                     savingsGoalViewModel = savingsGoalViewModel,
-                    reportViewModel = reportViewModel
+                    reportViewModel = reportViewModel,
+                    recurringTransactionViewModel = recurringTransactionViewModel
                 )
             }
         }
@@ -103,7 +112,8 @@ fun SessionRoot(
     accountViewModel: AccountViewModel,
     budgetViewModel: BudgetViewModel,
     savingsGoalViewModel: SavingsGoalViewModel,
-    reportViewModel: ReportViewModel
+    reportViewModel: ReportViewModel,
+    recurringTransactionViewModel: RecurringTransactionViewModel
 ) {
     val state by viewModel.state.collectAsState()
 
@@ -129,6 +139,7 @@ fun SessionRoot(
                 budgetViewModel = budgetViewModel,
                 savingsGoalViewModel = savingsGoalViewModel,
                 reportViewModel = reportViewModel,
+                recurringTransactionViewModel = recurringTransactionViewModel,
                 onLogout = {
                     viewModel.logout()
                 }
@@ -136,3 +147,6 @@ fun SessionRoot(
         }
     }
 }
+
+
+
