@@ -15,6 +15,7 @@ import com.latechhub.finance.data.remote.BudgetRepository
 import com.latechhub.finance.data.remote.DashboardRepository
 import com.latechhub.finance.data.remote.TransactionRepository
 import com.latechhub.finance.data.remote.SavingsGoalRepository
+import com.latechhub.finance.data.remote.ReportRepository
 import com.latechhub.finance.ui.accounts.AccountViewModel
 import com.latechhub.finance.ui.accounts.AccountViewModelFactory
 import com.latechhub.finance.ui.budgets.BudgetViewModel
@@ -27,6 +28,8 @@ import com.latechhub.finance.ui.dashboard.TransactionViewModelFactory
 import com.latechhub.finance.ui.navigation.FinanceNavHost
 import com.latechhub.finance.ui.savingsgoals.SavingsGoalViewModel
 import com.latechhub.finance.ui.savingsgoals.SavingsGoalViewModelFactory
+import com.latechhub.finance.ui.reports.ReportViewModel
+import com.latechhub.finance.ui.reports.ReportViewModelFactory
 import com.latechhub.finance.ui.session.SessionState
 import com.latechhub.finance.ui.session.SessionViewModel
 import com.latechhub.finance.ui.session.SessionViewModelFactory
@@ -60,6 +63,7 @@ class MainActivity : ComponentActivity() {
             this,
             AccountViewModelFactory(AccountRepository())
         )[AccountViewModel::class.java]
+
         val budgetViewModel = ViewModelProvider(
             this,
             BudgetViewModelFactory(BudgetRepository())
@@ -70,6 +74,11 @@ class MainActivity : ComponentActivity() {
             SavingsGoalViewModelFactory(SavingsGoalRepository())
         )[SavingsGoalViewModel::class.java]
 
+        val reportViewModel = ViewModelProvider(
+            this,
+            ReportViewModelFactory(ReportRepository())
+        )[ReportViewModel::class.java]
+
         setContent {
             FinanceTheme {
                 SessionRoot(
@@ -78,7 +87,8 @@ class MainActivity : ComponentActivity() {
                     transactionViewModel = transactionViewModel,
                     accountViewModel = accountViewModel,
                     budgetViewModel = budgetViewModel,
-                    savingsGoalViewModel = savingsGoalViewModel
+                    savingsGoalViewModel = savingsGoalViewModel,
+                    reportViewModel = reportViewModel
                 )
             }
         }
@@ -92,7 +102,8 @@ fun SessionRoot(
     transactionViewModel: TransactionViewModel,
     accountViewModel: AccountViewModel,
     budgetViewModel: BudgetViewModel,
-    savingsGoalViewModel: SavingsGoalViewModel
+    savingsGoalViewModel: SavingsGoalViewModel,
+    reportViewModel: ReportViewModel
 ) {
     val state by viewModel.state.collectAsState()
 
@@ -117,6 +128,7 @@ fun SessionRoot(
                 accountViewModel = accountViewModel,
                 budgetViewModel = budgetViewModel,
                 savingsGoalViewModel = savingsGoalViewModel,
+                reportViewModel = reportViewModel,
                 onLogout = {
                     viewModel.logout()
                 }

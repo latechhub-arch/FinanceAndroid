@@ -21,6 +21,8 @@ import com.latechhub.finance.ui.savingsgoals.SavingsGoalDetailsScreen
 import com.latechhub.finance.ui.savingsgoals.SavingsGoalScreen
 import com.latechhub.finance.ui.savingsgoals.SavingsGoalState
 import com.latechhub.finance.ui.savingsgoals.SavingsGoalViewModel
+import com.latechhub.finance.ui.reports.ReportViewModel
+import com.latechhub.finance.ui.reports.ReportsScreen
 import com.latechhub.finance.ui.transactions.TransactionDetailsScreen
 import com.latechhub.finance.ui.transactions.TransactionsScreen
 
@@ -31,6 +33,7 @@ fun FinanceNavHost(
     accountViewModel: AccountViewModel,
     budgetViewModel: BudgetViewModel,
     savingsGoalViewModel: SavingsGoalViewModel,
+    reportViewModel: ReportViewModel,
     onLogout: () -> Unit
 ) {
     val navController = rememberNavController()
@@ -68,6 +71,9 @@ fun FinanceNavHost(
                 },
                 onSavingsGoalsClick = {
                     navController.navigate(NavRoutes.SAVINGS_GOALS)
+                },
+                onReportsClick = {
+                    navController.navigate(NavRoutes.REPORTS)
                 },
                 onLogout = onLogout
             )
@@ -113,6 +119,12 @@ fun FinanceNavHost(
                     Text(budgetState.message)
                 }
             }
+        }
+
+        composable(NavRoutes.REPORTS) {
+            ReportsScreen(
+                viewModel = reportViewModel
+            )
         }
 
         composable(NavRoutes.SAVINGS_GOALS) {
@@ -211,3 +223,7 @@ fun FinanceNavHost(
         }
     }
 }
+
+
+
+

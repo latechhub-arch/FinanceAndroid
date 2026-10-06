@@ -75,4 +75,7 @@ object RetrofitClient {
 
     val savingsGoalApi: SavingsGoalApi
         get() = retrofit.create(SavingsGoalApi::class.java)
+
+    val reportApi: ReportApi
+        get() = retrofit.create(ReportApi::class.java)
 }
