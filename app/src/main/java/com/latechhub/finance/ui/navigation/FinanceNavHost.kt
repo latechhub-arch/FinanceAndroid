@@ -216,19 +216,34 @@ fun FinanceNavHost(
         }
 
         composable(NavRoutes.TRANSACTIONS) {
-            TransactionsScreen(
-                transactionViewModel = transactionViewModel,
-                onTransactionClick = { transaction ->
-                    selectedTransaction.value = transaction
+            val accountState = accountViewModel.state.collectAsState().value
 
-                    navController.navigate(
-                        NavRoutes.TRANSACTION_DETAILS.replace(
-                            "{transactionId}",
-                            transaction.id
-                        )
+            when (accountState) {
+                is AccountState.Success -> {
+                    TransactionsScreen(
+                        transactionViewModel = transactionViewModel,
+                        accounts = accountState.accounts,
+                        onTransactionClick = { transaction ->
+                            selectedTransaction.value = transaction
+
+                            navController.navigate(
+                                NavRoutes.TRANSACTION_DETAILS.replace(
+                                    "{transactionId}",
+                                    transaction.id
+                                )
+                            )
+                        }
                     )
                 }
-            )
+
+                AccountState.Loading -> {
+                    Text("Loading accounts...")
+                }
+
+                is AccountState.Error -> {
+                    Text(accountState.message)
+                }
+            }
         }
 
         composable(NavRoutes.TRANSACTION_DETAILS) {
@@ -245,6 +260,12 @@ fun FinanceNavHost(
                     accounts = accountState.accounts,
                     onTransactionUpdated = { updated ->
                         selectedTransaction.value = updated
+                    },
+                    onTransactionDeleted = { success, _ ->
+                        if (success) {
+                            selectedTransaction.value = null
+                            navController.popBackStack()
+                        }
                     }
                 )
             } else if (transaction != null) {
@@ -265,6 +286,8 @@ fun FinanceNavHost(
         }
     }
 }
+
+
 
 
 

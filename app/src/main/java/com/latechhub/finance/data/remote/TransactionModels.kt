@@ -1,4 +1,4 @@
-package com.latechhub.finance.data.remote
+﻿package com.latechhub.finance.data.remote
 
 import kotlinx.serialization.Serializable
 
@@ -36,6 +36,18 @@ data class TransactionItem(
 )
 
 @Serializable
+data class CreateTransactionRequest(
+    val accountId: String,
+    val type: String,
+    val amount: Double,
+    val category: String? = null,
+    val description: String? = null,
+    val transactionDate: String? = null,
+    val reference: String? = null,
+    val transferAccountId: String? = null
+)
+
+@Serializable
 data class UpdateTransactionRequest(
     val accountId: String? = null,
     val type: String? = null,
@@ -58,5 +70,27 @@ data class TransactionAccount(
     val balance: Double,
     val isActive: Boolean
 )
+ 
+@Serializable
+data class MpesaImportRequest(
+    val accountId: String,
+    val type: String,
+    val amount: Double,
+    val transactionDate: String,
+    val externalReference: String,
+    val description: String? = null,
+    val category: String? = null,
+    val reference: String? = null
+)
 
+@Serializable
+data class BankSmsImportRequest(
+    val accountId: String,
+    val sms: String
+)
 
+@Serializable
+data class FulizaImportRequest(
+    val accountId: String,
+    val sms: String
+)

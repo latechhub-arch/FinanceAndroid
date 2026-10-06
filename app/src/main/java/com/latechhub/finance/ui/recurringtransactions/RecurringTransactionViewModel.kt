@@ -1,7 +1,8 @@
-﻿package com.latechhub.finance.ui.recurringtransactions
+package com.latechhub.finance.ui.recurringtransactions
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.latechhub.finance.data.remote.ApiErrorHandler
 import com.latechhub.finance.data.remote.CreateRecurringTransactionRequest
 import com.latechhub.finance.data.remote.RecurringTransaction
 import com.latechhub.finance.data.remote.RecurringTransactionRepository
@@ -78,7 +79,7 @@ class RecurringTransactionViewModel(
             } catch (e: Exception) {
                 _state.value =
                     RecurringTransactionState.Error(
-                        e.message ?: "Unable to load recurring transactions"
+                        ApiErrorHandler.getMessage(e, "Unable to load recurring transactions")
                     )
             }
         }
@@ -101,7 +102,7 @@ class RecurringTransactionViewModel(
             } catch (e: Exception) {
                 onResult(
                     false,
-                    e.message ?: "Unable to create recurring transaction",
+                    ApiErrorHandler.getMessage(e, "Unable to create recurring transaction"),
                     null
                 )
             }
@@ -126,7 +127,7 @@ class RecurringTransactionViewModel(
             } catch (e: Exception) {
                 onResult(
                     false,
-                    e.message ?: "Unable to update recurring transaction",
+                    ApiErrorHandler.getMessage(e, "Unable to update recurring transaction"),
                     null
                 )
             }
@@ -150,7 +151,7 @@ class RecurringTransactionViewModel(
             } catch (e: Exception) {
                 onResult(
                     false,
-                    e.message ?: "Unable to delete recurring transaction"
+                    ApiErrorHandler.getMessage(e, "Unable to delete recurring transaction")
                 )
             }
         }
@@ -172,12 +173,13 @@ class RecurringTransactionViewModel(
             } catch (e: Exception) {
                 onResult(
                     false,
-                    e.message ?: "Unable to load recurring transaction",
+                    ApiErrorHandler.getMessage(e, "Unable to load recurring transaction"),
                     null
                 )
             }
         }
     }
 }
+
 
 

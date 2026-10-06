@@ -2,6 +2,7 @@ package com.latechhub.finance.ui.dashboard
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.latechhub.finance.data.remote.ApiErrorHandler
 import com.latechhub.finance.data.remote.DashboardData
 import com.latechhub.finance.data.remote.DashboardRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -51,9 +52,10 @@ class DashboardViewModel(
                     }
             } catch (e: Exception) {
                 _state.value = DashboardState.Error(
-                    e.message ?: "Unable to load dashboard"
+                    ApiErrorHandler.getMessage(e, "Unable to load dashboard")
                 )
             }
         }
     }
 }
+

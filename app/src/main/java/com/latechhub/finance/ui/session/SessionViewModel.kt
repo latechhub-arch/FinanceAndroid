@@ -2,6 +2,7 @@ package com.latechhub.finance.ui.session
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.latechhub.finance.data.remote.ApiErrorHandler
 import com.latechhub.finance.data.remote.AuthRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -40,7 +41,7 @@ class SessionViewModel(
                 }
             } catch (e: Exception) {
                 _state.value = SessionState.Error(
-                    e.message ?: "Login failed"
+                    ApiErrorHandler.getMessage(e, "Login failed")
                 )
             }
         }
@@ -77,12 +78,13 @@ class SessionViewModel(
                 }
             } catch (e: Exception) {
                 _state.value = SessionState.Error(
-                    e.message ?: "Unable to verify session"
+                    ApiErrorHandler.getMessage(e, "Unable to verify session")
                 )
             }
         }
     }
 }
+
 
 
 

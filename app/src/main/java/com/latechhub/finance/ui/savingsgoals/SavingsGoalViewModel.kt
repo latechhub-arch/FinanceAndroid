@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.latechhub.finance.data.remote.ApiErrorHandler
 import com.latechhub.finance.data.remote.CreateSavingsContributionRequest
 import com.latechhub.finance.data.remote.CreateSavingsGoalRequest
 import com.latechhub.finance.data.remote.SavingsContribution
@@ -50,7 +51,7 @@ class SavingsGoalViewModel(
                 }
             } catch (e: Exception) {
                 state = SavingsGoalState.Error(
-                    e.message ?: "Unable to load savings goals"
+                    ApiErrorHandler.getMessage(e, "Unable to load savings goals")
                 )
             }
         }
@@ -73,7 +74,7 @@ class SavingsGoalViewModel(
             } catch (e: Exception) {
                 onResult(
                     false,
-                    e.message ?: "Unable to create savings goal",
+                    ApiErrorHandler.getMessage(e, "Unable to create savings goal"),
                     null
                 )
             }
@@ -98,7 +99,7 @@ class SavingsGoalViewModel(
             } catch (e: Exception) {
                 onResult(
                     false,
-                    e.message ?: "Unable to update savings goal",
+                    ApiErrorHandler.getMessage(e, "Unable to update savings goal"),
                     null
                 )
             }
@@ -122,7 +123,7 @@ class SavingsGoalViewModel(
             } catch (e: Exception) {
                 onResult(
                     false,
-                    e.message ?: "Unable to delete savings goal"
+                    ApiErrorHandler.getMessage(e, "Unable to delete savings goal")
                 )
             }
         }
@@ -160,7 +161,7 @@ class SavingsGoalViewModel(
                 }
             } catch (e: Exception) {
                 contributionsState = ContributionsState.Error(
-                    e.message ?: "Unable to load contributions"
+                    ApiErrorHandler.getMessage(e, "Unable to load contributions")
                 )
             }
         }
@@ -185,7 +186,7 @@ class SavingsGoalViewModel(
             } catch (e: Exception) {
                 onResult(
                     false,
-                    e.message ?: "Unable to add contribution",
+                    ApiErrorHandler.getMessage(e, "Unable to add contribution"),
                     null
                 )
             }
@@ -216,7 +217,7 @@ class SavingsGoalViewModel(
             } catch (e: Exception) {
                 onResult(
                     false,
-                    e.message ?: "Unable to update contribution",
+                    ApiErrorHandler.getMessage(e, "Unable to update contribution"),
                     null
                 )
             }
@@ -245,7 +246,7 @@ class SavingsGoalViewModel(
             } catch (e: Exception) {
                 onResult(
                     false,
-                    e.message ?: "Unable to delete contribution"
+                    ApiErrorHandler.getMessage(e, "Unable to delete contribution")
                 )
             }
         }
@@ -255,3 +256,4 @@ class SavingsGoalViewModel(
         loadGoals()
     }
 }
+

@@ -1,4 +1,4 @@
-package com.latechhub.finance.ui.transactions
+﻿package com.latechhub.finance.ui.transactions
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -17,6 +18,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -36,9 +38,13 @@ fun TransactionDetailsScreen(
     transaction: TransactionItem,
     viewModel: TransactionViewModel,
     accounts: List<FinancialAccount>,
-    onTransactionUpdated: (TransactionItem) -> Unit
+    onTransactionUpdated: (TransactionItem) -> Unit,
+    onTransactionDeleted: (Boolean, String) -> Unit
 ) {
     var showEditForm by remember { mutableStateOf(false) }
+    var showDeleteConfirmation by remember { mutableStateOf(false) }
+    var deleting by remember { mutableStateOf(false) }
+    var deleteErrorMessage by remember { mutableStateOf<String?>(null) }
 
     if (showEditForm) {
         EditTransactionForm(
@@ -179,6 +185,85 @@ fun TransactionDetailsScreen(
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Edit Transaction")
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Button(
+            onClick = {
+                deleteErrorMessage = null
+                showDeleteConfirmation = true
+            },
+            modifier = Modifier.fillMaxWidth(),
+            enabled = !deleting
+        ) {
+            Text("Delete Transaction")
+        }
+
+        if (showDeleteConfirmation) {
+            AlertDialog(
+                onDismissRequest = {
+                    if (!deleting) {
+                        showDeleteConfirmation = false
+                    }
+                },
+                title = {
+                    Text("Delete Transaction")
+                },
+                text = {
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text(
+                            "Are you sure you want to delete this transaction? " +
+                                "This will also reverse its effect on the account balance."
+                        )
+
+                        deleteErrorMessage?.let { message ->
+                            Text(
+                                text = message,
+                                color = MaterialTheme.colorScheme.error
+                            )
+                        }
+                    }
+                },
+                confirmButton = {
+                    Button(
+                        enabled = !deleting,
+                        onClick = {
+                            deleting = true
+                            deleteErrorMessage = null
+
+                            viewModel.deleteTransaction(
+                                id = transaction.id,
+                                onResult = { success, message ->
+                                    deleting = false
+
+                                    if (success) {
+                                        showDeleteConfirmation = false
+                                        onTransactionDeleted(true, message)
+                                    } else {
+                                        deleteErrorMessage = message
+                                    }
+                                }
+                            )
+                        }
+                    ) {
+                        Text(
+                            if (deleting) "Deleting..." else "Delete"
+                        )
+                    }
+                },
+                dismissButton = {
+                    TextButton(
+                        enabled = !deleting,
+                        onClick = {
+                            showDeleteConfirmation = false
+                        }
+                    ) {
+                        Text("Cancel")
+                    }
+                }
+            )
         }
     }
 }
@@ -481,5 +566,8 @@ private fun EditTransactionForm(
         }
     }
 }
+
+
+
 
 

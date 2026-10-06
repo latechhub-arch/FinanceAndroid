@@ -2,6 +2,7 @@ package com.latechhub.finance.ui.accounts
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.latechhub.finance.data.remote.ApiErrorHandler
 import com.latechhub.finance.data.remote.AccountRepository
 import com.latechhub.finance.data.remote.CreateAccountRequest
 import com.latechhub.finance.data.remote.UpdateAccountRequest
@@ -64,7 +65,7 @@ class AccountViewModel(
             } catch (e: Exception) {
                 onResult(
                     false,
-                    e.message ?: "Unable to update account"
+                    ApiErrorHandler.getMessage(e, "Unable to update account")
                 )
             }
         }
@@ -95,7 +96,7 @@ class AccountViewModel(
             } catch (e: Exception) {
                 onResult(
                     false,
-                    e.message ?: "Unable to delete account"
+                    ApiErrorHandler.getMessage(e, "Unable to delete account")
                 )
             }
         }
@@ -126,7 +127,7 @@ class AccountViewModel(
             } catch (e: Exception) {
                 onResult(
                     false,
-                    e.message ?: "Unable to create account"
+                    ApiErrorHandler.getMessage(e, "Unable to create account")
                 )
             }
         }
@@ -147,12 +148,13 @@ class AccountViewModel(
                     }
             } catch (e: Exception) {
                 _state.value = AccountState.Error(
-                    e.message ?: "Unable to load accounts"
+                    ApiErrorHandler.getMessage(e, "Unable to load accounts")
                 )
             }
         }
     }
 }
+
 
 
 

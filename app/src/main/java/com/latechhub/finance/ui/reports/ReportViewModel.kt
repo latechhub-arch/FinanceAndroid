@@ -2,6 +2,7 @@ package com.latechhub.finance.ui.reports
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.latechhub.finance.data.remote.ApiErrorHandler
 import com.latechhub.finance.data.remote.AccountReport
 import com.latechhub.finance.data.remote.ExpenseByCategory
 import com.latechhub.finance.data.remote.ReportRepository
@@ -81,9 +82,10 @@ class ReportViewModel(
                 }
             } catch (e: Exception) {
                 _state.value = ReportState.Error(
-                    e.message ?: "Unable to load reports"
+                    ApiErrorHandler.getMessage(e, "Unable to load reports")
                 )
             }
         }
     }
 }
+

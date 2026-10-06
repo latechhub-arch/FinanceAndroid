@@ -2,6 +2,7 @@ package com.latechhub.finance.ui.budgets
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.latechhub.finance.data.remote.ApiErrorHandler
 import com.latechhub.finance.data.remote.Budget
 import com.latechhub.finance.data.remote.BudgetRepository
 import com.latechhub.finance.data.remote.CreateBudgetRequest
@@ -50,7 +51,7 @@ class BudgetViewModel(
                 }
             } catch (e: Exception) {
                 _state.value = BudgetState.Error(
-                    e.message ?: "Unable to load budgets"
+                    ApiErrorHandler.getMessage(e, "Unable to load budgets")
                 )
             }
         }
@@ -73,7 +74,7 @@ class BudgetViewModel(
             } catch (e: Exception) {
                 onResult(
                     false,
-                    e.message ?: "Unable to create budget",
+                    ApiErrorHandler.getMessage(e, "Unable to create budget"),
                     null
                 )
             }
@@ -98,7 +99,7 @@ class BudgetViewModel(
             } catch (e: Exception) {
                 onResult(
                     false,
-                    e.message ?: "Unable to update budget",
+                    ApiErrorHandler.getMessage(e, "Unable to update budget"),
                     null
                 )
             }
@@ -122,10 +123,11 @@ class BudgetViewModel(
             } catch (e: Exception) {
                 onResult(
                     false,
-                    e.message ?: "Unable to delete budget"
+                    ApiErrorHandler.getMessage(e, "Unable to delete budget")
                 )
             }
         }
     }
 }
+
 
