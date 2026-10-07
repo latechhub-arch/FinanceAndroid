@@ -16,6 +16,11 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.ViewModelProvider
+import androidx.work.Constraints
+import androidx.work.ExistingWorkPolicy
+import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 import com.latechhub.finance.data.local.TokenStorage
 import com.latechhub.finance.data.local.SmsSettingsStore
 import com.latechhub.finance.data.remote.AccountRepository
@@ -142,14 +147,64 @@ fun SessionRoot(
     val isAuthenticated = state is SessionState.Authenticated
 
     LaunchedEffect(isAuthenticated) {
-        if (
-            isAuthenticated &&
+        if (!isAuthenticated) {
+            return@LaunchedEffect
+        }
+
+        val receiveSmsGranted =
             ContextCompat.checkSelfPermission(
                 context,
                 Manifest.permission.RECEIVE_SMS
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
+            ) == PackageManager.PERMISSION_GRANTED
+
+        val readSmsGranted =
+            ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.READ_SMS
+            ) == PackageManager.PERMISSION_GRANTED
+
+        when {
+            !receiveSmsGranted -> {
+                smsPermissionLauncher.launch(Manifest.permission.RECEIVE_SMS)
+            }
+
+            !readSmsGranted -> {
+                smsPermissionLauncher.launch(Manifest.permission.READ_SMS)
+            }
+        }
+    }
+
+    val requestInitialSmsSync: () -> Unit = {
+        val receiveSmsGranted =
+            ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.RECEIVE_SMS
+            ) == PackageManager.PERMISSION_GRANTED
+
+        val readSmsGranted =
+            ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.READ_SMS
+            ) == PackageManager.PERMISSION_GRANTED
+
+        if (!receiveSmsGranted) {
             smsPermissionLauncher.launch(Manifest.permission.RECEIVE_SMS)
+        } else if (!readSmsGranted) {
+            smsPermissionLauncher.launch(Manifest.permission.READ_SMS)
+        } else {
+            val constraints = Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .build()
+
+            val syncRequest = OneTimeWorkRequestBuilder<com.latechhub.finance.sms.InitialSmsSyncWorker>()
+                .setConstraints(constraints)
+                .build()
+
+            WorkManager.getInstance(context).enqueueUniqueWork(
+                "initial_sms_sync",
+                ExistingWorkPolicy.KEEP,
+                syncRequest
+            )
         }
     }
 
@@ -177,6 +232,7 @@ fun SessionRoot(
                 savingsGoalViewModel = savingsGoalViewModel,
                 reportViewModel = reportViewModel,
                 recurringTransactionViewModel = recurringTransactionViewModel,
+                onInitialSmsSyncRequested = requestInitialSmsSync,
                 onLogout = {
                     viewModel.logout()
                 }
@@ -184,6 +240,7 @@ fun SessionRoot(
         }
     }
 }
+
 
 
 

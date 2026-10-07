@@ -1,4 +1,4 @@
-﻿package com.latechhub.finance.ui.transactions
+package com.latechhub.finance.ui.transactions
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -324,6 +324,7 @@ private fun ImportTransactionsDialog(
     var category by remember { mutableStateOf("") }
     var reference by remember { mutableStateOf("") }
     var sms by remember { mutableStateOf("") }
+    var bankSmsSender by remember { mutableStateOf("") }
 
     var expandedSource by remember { mutableStateOf(false) }
     var expandedAccount by remember { mutableStateOf(false) }
@@ -566,6 +567,22 @@ private fun ImportTransactionsDialog(
                         singleLine = true
                     )
                 } else {
+                    if (source == "BANK_SMS") {
+                        OutlinedTextField(
+                            modifier = Modifier.fillMaxWidth(),
+                            value = bankSmsSender,
+                            onValueChange = {
+                                bankSmsSender = it
+                            },
+                            label = {
+                                Text("Bank SMS Sender")
+                            },
+                            placeholder = {
+                                Text("e.g. CoopBank, KCB, Equity Bank")
+                            },
+                            singleLine = true
+                        )
+                    }
                     OutlinedTextField(
                         modifier = Modifier.fillMaxWidth(),
                         value = sms,
@@ -665,6 +682,7 @@ private fun ImportTransactionsDialog(
                                 viewModel.importBankSmsTransaction(
                                     request = BankSmsImportRequest(
                                         accountId = accountId,
+                                        sender = bankSmsSender.trim(),
                                         sms = sms.trim()
                                     )
                                 ) { success, message, _ ->

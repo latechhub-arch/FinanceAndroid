@@ -40,6 +40,7 @@ fun FinanceNavHost(
     savingsGoalViewModel: SavingsGoalViewModel,
     reportViewModel: ReportViewModel,
     recurringTransactionViewModel: RecurringTransactionViewModel,
+    onInitialSmsSyncRequested: () -> Unit,
     onLogout: () -> Unit
 ) {
     val navController = rememberNavController()
@@ -96,7 +97,8 @@ fun FinanceNavHost(
                     AccountsScreen(
                         accounts = accountState.accounts,
                         viewModel = accountViewModel,
-                        smsSettingsViewModel = smsSettingsViewModel
+                        smsSettingsViewModel = smsSettingsViewModel,
+                        onInitialSmsSyncRequested = onInitialSmsSyncRequested
                     )
                 }
 
@@ -289,6 +291,7 @@ fun FinanceNavHost(
         }
     }
 }
+
 
 
 

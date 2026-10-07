@@ -92,6 +92,7 @@ data class MpesaSmsImportRequest(
 @Serializable
 data class BankSmsImportRequest(
     val accountId: String,
+    val sender: String,
     val sms: String
 )
 

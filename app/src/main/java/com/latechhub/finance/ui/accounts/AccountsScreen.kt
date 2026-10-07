@@ -44,7 +44,8 @@ private val accountTypes = listOf(
 fun AccountsScreen(
     accounts: List<FinancialAccount>,
     viewModel: AccountViewModel,
-    smsSettingsViewModel: SmsSettingsViewModel
+    smsSettingsViewModel: SmsSettingsViewModel,
+    onInitialSmsSyncRequested: () -> Unit
 ) {
     var showCreateForm by remember { mutableStateOf(false) }
     var accountToEdit by remember { mutableStateOf<FinancialAccount?>(null) }
@@ -353,6 +354,39 @@ fun AccountsScreen(
                             "Select Bank Account"
                         } else {
                             "Change Bank Account"
+                        }
+                    )
+
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(
+                    text = "Initial SMS Synchronization",
+                    style = MaterialTheme.typography.labelLarge
+                )
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                Text(
+                    text = if (smsSettingsState.initialSyncCompleted) {
+                        "Initial SMS synchronization completed."
+                    } else {
+                        "Import recent M-PESA, Fuliza, and supported bank SMS history after installation."
+                    },
+                    style = MaterialTheme.typography.bodySmall
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Button(
+                    onClick = onInitialSmsSyncRequested,
+                    enabled = selectedMpesaAccount != null || selectedBankAccount != null
+                ) {
+                    Text(
+                        if (smsSettingsState.initialSyncCompleted) {
+                            "Run Initial Sync Again"
+                        } else {
+                            "Run Initial SMS Sync"
                         }
                     )
                 }
@@ -837,6 +871,9 @@ private fun EditAccountForm(
         }
     }
 }
+
+
+
 
 
 

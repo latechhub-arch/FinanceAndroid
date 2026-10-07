@@ -10,6 +10,20 @@ object SmsClassifier {
         UNKNOWN
     }
 
+    private val bankTransactionSenders = setOf(
+        "COOPBANK",
+        "KCB",
+        "EQUITY",
+        "EQUITEL",
+        "EQUITY BANK",
+        "FAMILYBANK",
+        "IANDMBANK",
+        "NCBA_BANK",
+        "DTB",
+        "STANBIC",
+        "ABSABANK"
+    )
+
     fun classify(sender: String, body: String): Type {
         val normalizedSender = sender.trim().uppercase()
         val normalizedBody = body.trim().uppercase()
@@ -22,26 +36,18 @@ object SmsClassifier {
         }
 
         if (
-            normalizedBody.contains("FULIZA") ||
-            normalizedBody.contains("FULIZA LOAN") ||
-            normalizedBody.contains("FULIZA OUTSTANDING")
+            normalizedBody.matches(Regex("^[A-Z0-9]+\\s+CONFIRMED\\..*")) &&
+            normalizedBody.contains("FULIZA M-PESA AMOUNT IS") &&
+            normalizedBody.contains("TOTAL FULIZA M-PESA OUTSTANDING AMOUNT IS")
         ) {
             return Type.FULIZA
-        }
-
-        if (
-            normalizedSender.contains("MPESA") ||
-            normalizedSender.contains("SAFARICOM") ||
-            normalizedBody.contains("M-PESA")
-        ) {
-            return Type.MPESA
         }
 
         if (normalizedBody.matches(Regex("^[A-Z0-9]+\\s+CONFIRMED\\..*"))) {
             return Type.MPESA
         }
 
-        if (normalizedSender.isNotBlank()) {
+        if (normalizedSender in bankTransactionSenders) {
             return Type.BANK
         }
 

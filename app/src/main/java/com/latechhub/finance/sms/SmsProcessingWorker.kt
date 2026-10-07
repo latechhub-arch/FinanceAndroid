@@ -118,6 +118,7 @@ class SmsProcessingWorker(
                         transactionRepository.importBankSmsTransaction(
                             BankSmsImportRequest(
                                 accountId = accountId,
+                                sender = sms.sender,
                                 sms = sms.body
                             )
                         )

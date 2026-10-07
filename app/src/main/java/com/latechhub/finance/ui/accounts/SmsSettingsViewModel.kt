@@ -11,7 +11,8 @@ import kotlinx.coroutines.launch
 
 data class SmsSettingsState(
     val mpesaAccountId: String? = null,
-    val bankAccountId: String? = null
+    val bankAccountId: String? = null,
+    val initialSyncCompleted: Boolean = false
 )
 
 class SmsSettingsViewModel(
@@ -29,10 +30,12 @@ class SmsSettingsViewModel(
         viewModelScope.launch {
             val mpesaAccountId = store.mpesaAccountId.first()
             val bankAccountId = store.bankAccountId.first()
+            val initialSyncCompleted = store.initialSyncCompleted.first()
 
             _state.value = SmsSettingsState(
                 mpesaAccountId = mpesaAccountId,
-                bankAccountId = bankAccountId
+                bankAccountId = bankAccountId,
+                initialSyncCompleted = initialSyncCompleted
             )
         }
     }
@@ -42,7 +45,8 @@ class SmsSettingsViewModel(
             store.saveMpesaAccountId(accountId)
 
             _state.value = _state.value.copy(
-                mpesaAccountId = accountId
+                mpesaAccountId = accountId,
+                initialSyncCompleted = false
             )
         }
     }
