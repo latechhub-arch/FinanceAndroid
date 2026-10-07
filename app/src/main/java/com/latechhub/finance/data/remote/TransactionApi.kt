@@ -1,4 +1,4 @@
-﻿package com.latechhub.finance.data.remote
+package com.latechhub.finance.data.remote
 
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -44,6 +44,10 @@ interface TransactionApi {
         @Body request: MpesaImportRequest
     ): ApiResponse<TransactionItem>
 
+    @POST("api/v1/transactions/import/mpesa-sms")
+    suspend fun importMpesaSmsTransaction(
+        @Body request: MpesaSmsImportRequest
+    ): ApiResponse<TransactionItem>
     @POST("api/v1/transactions/import/bank-sms")
     suspend fun importBankSmsTransaction(
         @Body request: BankSmsImportRequest
@@ -53,4 +57,13 @@ interface TransactionApi {
     suspend fun importFulizaTransaction(
         @Body request: FulizaImportRequest
     ): ApiResponse<TransactionItem>
+
+    @POST("api/v1/transactions/import/fuliza-repayment-sms")
+    suspend fun importFulizaRepaymentSms(
+        @Body request: FulizaRepaymentSmsImportRequest
+    ): ApiResponse<TransactionItem>
 }
+
+
+
+

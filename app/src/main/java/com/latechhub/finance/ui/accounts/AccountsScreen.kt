@@ -18,6 +18,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,7 +43,8 @@ private val accountTypes = listOf(
 @Composable
 fun AccountsScreen(
     accounts: List<FinancialAccount>,
-    viewModel: AccountViewModel
+    viewModel: AccountViewModel,
+    smsSettingsViewModel: SmsSettingsViewModel
 ) {
     var showCreateForm by remember { mutableStateOf(false) }
     var accountToEdit by remember { mutableStateOf<FinancialAccount?>(null) }
@@ -50,6 +52,93 @@ fun AccountsScreen(
     var dialogMessage by remember { mutableStateOf<String?>(null) }
     var dialogSuccess by remember { mutableStateOf(false) }
 
+    val smsSettingsState by smsSettingsViewModel.state.collectAsState()
+    val mobileMoneyAccounts = accounts.filter { it.type == "MOBILE_MONEY" && it.isActive }
+    val bankAccounts = accounts.filter { it.type == "BANK" && it.isActive }
+    var showMpesaAccountSelector by remember { mutableStateOf(false) }
+    var showBankAccountSelector by remember { mutableStateOf(false) }
+
+    if (showMpesaAccountSelector) {
+        AlertDialog(
+            onDismissRequest = {
+                showMpesaAccountSelector = false
+            },
+            title = {
+                Text("Select M-PESA Account")
+            },
+            text = {
+                Column {
+                    if (mobileMoneyAccounts.isEmpty()) {
+                        Text("No active MOBILE_MONEY accounts available.")
+                    } else {
+                        mobileMoneyAccounts.forEach { account ->
+                            OutlinedButton(
+                                onClick = {
+                                    smsSettingsViewModel.saveMpesaAccount(account.id)
+                                    showMpesaAccountSelector = false
+                                },
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text(account.name)
+                            }
+
+                            Spacer(modifier = Modifier.height(6.dp))
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                OutlinedButton(
+                    onClick = {
+                        showMpesaAccountSelector = false
+                    }
+                ) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
+
+    if (showBankAccountSelector) {
+        AlertDialog(
+            onDismissRequest = {
+                showBankAccountSelector = false
+            },
+            title = {
+                Text("Select Bank Account")
+            },
+            text = {
+                Column {
+                    if (bankAccounts.isEmpty()) {
+                        Text("No active BANK accounts available.")
+                    } else {
+                        bankAccounts.forEach { account ->
+                            OutlinedButton(
+                                onClick = {
+                                    smsSettingsViewModel.saveBankAccount(account.id)
+                                    showBankAccountSelector = false
+                                },
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text(account.name)
+                            }
+
+                            Spacer(modifier = Modifier.height(6.dp))
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                OutlinedButton(
+                    onClick = {
+                        showBankAccountSelector = false
+                    }
+                ) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
     accountToDelete?.let { account ->
         AlertDialog(
             onDismissRequest = { accountToDelete = null },
@@ -172,6 +261,102 @@ fun AccountsScreen(
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Add Account")
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Card(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column(
+                modifier = Modifier.padding(16.dp)
+            ) {
+                Text(
+                    text = "Automatic SMS Import",
+                    style = MaterialTheme.typography.titleMedium
+                )
+
+                Spacer(modifier = Modifier.height(6.dp))
+
+                Text(
+                    text = "Choose where incoming M-PESA and bank SMS transactions should be imported automatically.",
+                    style = MaterialTheme.typography.bodySmall
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                val selectedMpesaAccount =
+                    mobileMoneyAccounts.find {
+                        it.id == smsSettingsState.mpesaAccountId
+                    }
+
+                Text(
+                    text = "M-PESA SMS Account",
+                    style = MaterialTheme.typography.labelLarge
+                )
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                Text(
+                    text = selectedMpesaAccount?.name
+                        ?: "Not configured",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+
+                Spacer(modifier = Modifier.height(6.dp))
+
+                OutlinedButton(
+                    onClick = {
+                        showMpesaAccountSelector = true
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        if (selectedMpesaAccount == null) {
+                            "Select M-PESA Account"
+                        } else {
+                            "Change M-PESA Account"
+                        }
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                val selectedBankAccount =
+                    bankAccounts.find {
+                        it.id == smsSettingsState.bankAccountId
+                    }
+
+                Text(
+                    text = "Bank SMS Account",
+                    style = MaterialTheme.typography.labelLarge
+                )
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                Text(
+                    text = selectedBankAccount?.name
+                        ?: "Not configured",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+
+                Spacer(modifier = Modifier.height(6.dp))
+
+                OutlinedButton(
+                    onClick = {
+                        showBankAccountSelector = true
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        if (selectedBankAccount == null) {
+                            "Select Bank Account"
+                        } else {
+                            "Change Bank Account"
+                        }
+                    )
+                }
+            }
         }
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -652,6 +837,10 @@ private fun EditAccountForm(
         }
     }
 }
+
+
+
+
 
 
 

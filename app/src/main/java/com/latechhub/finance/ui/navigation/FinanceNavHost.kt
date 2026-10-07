@@ -1,4 +1,4 @@
-﻿package com.latechhub.finance.ui.navigation
+package com.latechhub.finance.ui.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -10,6 +10,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.latechhub.finance.ui.accounts.AccountState
 import com.latechhub.finance.ui.accounts.AccountViewModel
+import com.latechhub.finance.ui.accounts.SmsSettingsViewModel
 import com.latechhub.finance.ui.accounts.AccountsScreen
 import com.latechhub.finance.ui.budgets.BudgetScreen
 import com.latechhub.finance.ui.budgets.BudgetState
@@ -34,6 +35,7 @@ fun FinanceNavHost(
     dashboardViewModel: DashboardViewModel,
     transactionViewModel: TransactionViewModel,
     accountViewModel: AccountViewModel,
+    smsSettingsViewModel: SmsSettingsViewModel,
     budgetViewModel: BudgetViewModel,
     savingsGoalViewModel: SavingsGoalViewModel,
     reportViewModel: ReportViewModel,
@@ -93,7 +95,8 @@ fun FinanceNavHost(
                 is AccountState.Success -> {
                     AccountsScreen(
                         accounts = accountState.accounts,
-                        viewModel = accountViewModel
+                        viewModel = accountViewModel,
+                        smsSettingsViewModel = smsSettingsViewModel
                     )
                 }
 
@@ -286,6 +289,8 @@ fun FinanceNavHost(
         }
     }
 }
+
+
 
 
 

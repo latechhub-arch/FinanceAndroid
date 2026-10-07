@@ -1,4 +1,4 @@
-﻿package com.latechhub.finance.data.remote
+package com.latechhub.finance.data.remote
 
 class TransactionRepository {
     private val transactionApi = RetrofitClient.transactionApi
@@ -55,6 +55,11 @@ class TransactionRepository {
         return transactionApi.importMpesaTransaction(request)
     }
 
+    suspend fun importMpesaSmsTransaction(
+        request: MpesaSmsImportRequest
+    ): ApiResponse<TransactionItem> {
+        return transactionApi.importMpesaSmsTransaction(request)
+    }
     suspend fun importBankSmsTransaction(
         request: BankSmsImportRequest
     ): ApiResponse<TransactionItem> {
@@ -67,6 +72,11 @@ class TransactionRepository {
         return transactionApi.importFulizaTransaction(request)
     }
 
+    suspend fun importFulizaRepaymentSmsTransaction(
+        request: FulizaRepaymentSmsImportRequest
+    ): ApiResponse<TransactionItem> {
+        return transactionApi.importFulizaRepaymentSms(request)
+    }
     suspend fun getRecentTransactions(
         limit: Int = 5
     ): ApiResponse<TransactionListData> {
@@ -76,3 +86,6 @@ class TransactionRepository {
         )
     }
 }
+
+
+

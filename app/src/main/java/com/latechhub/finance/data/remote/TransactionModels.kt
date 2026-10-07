@@ -1,4 +1,4 @@
-﻿package com.latechhub.finance.data.remote
+package com.latechhub.finance.data.remote
 
 import kotlinx.serialization.Serializable
 
@@ -84,6 +84,12 @@ data class MpesaImportRequest(
 )
 
 @Serializable
+data class MpesaSmsImportRequest(
+    val accountId: String,
+    val sms: String
+)
+
+@Serializable
 data class BankSmsImportRequest(
     val accountId: String,
     val sms: String
@@ -94,3 +100,12 @@ data class FulizaImportRequest(
     val accountId: String,
     val sms: String
 )
+
+@Serializable
+data class FulizaRepaymentSmsImportRequest(
+    val accountId: String,
+    val sms: String
+)
+
+
+

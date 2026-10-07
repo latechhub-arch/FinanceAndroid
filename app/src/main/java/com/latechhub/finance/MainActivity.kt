@@ -1,14 +1,23 @@
-﻿package com.latechhub.finance
+package com.latechhub.finance
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Bundle
+
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.material3.Text
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.ContextCompat
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.ViewModelProvider
 import com.latechhub.finance.data.local.TokenStorage
+import com.latechhub.finance.data.local.SmsSettingsStore
 import com.latechhub.finance.data.remote.AccountRepository
 import com.latechhub.finance.data.remote.AuthRepository
 import com.latechhub.finance.data.remote.BudgetRepository
@@ -19,6 +28,8 @@ import com.latechhub.finance.data.remote.ReportRepository
 import com.latechhub.finance.data.remote.RecurringTransactionRepository
 import com.latechhub.finance.ui.accounts.AccountViewModel
 import com.latechhub.finance.ui.accounts.AccountViewModelFactory
+import com.latechhub.finance.ui.accounts.SmsSettingsViewModel
+import com.latechhub.finance.ui.accounts.SmsSettingsViewModelFactory
 import com.latechhub.finance.ui.budgets.BudgetViewModel
 import com.latechhub.finance.ui.budgets.BudgetViewModelFactory
 import com.latechhub.finance.ui.auth.LoginScreen
@@ -67,6 +78,11 @@ class MainActivity : ComponentActivity() {
             AccountViewModelFactory(AccountRepository())
         )[AccountViewModel::class.java]
 
+        val smsSettingsViewModel = ViewModelProvider(
+            this,
+            SmsSettingsViewModelFactory(SmsSettingsStore(applicationContext))
+        )[SmsSettingsViewModel::class.java]
+
         val budgetViewModel = ViewModelProvider(
             this,
             BudgetViewModelFactory(BudgetRepository())
@@ -94,6 +110,7 @@ class MainActivity : ComponentActivity() {
                     dashboardViewModel = dashboardViewModel,
                     transactionViewModel = transactionViewModel,
                     accountViewModel = accountViewModel,
+                    smsSettingsViewModel = smsSettingsViewModel,
                     budgetViewModel = budgetViewModel,
                     savingsGoalViewModel = savingsGoalViewModel,
                     reportViewModel = reportViewModel,
@@ -110,12 +127,31 @@ fun SessionRoot(
     dashboardViewModel: DashboardViewModel,
     transactionViewModel: TransactionViewModel,
     accountViewModel: AccountViewModel,
+    smsSettingsViewModel: SmsSettingsViewModel,
     budgetViewModel: BudgetViewModel,
     savingsGoalViewModel: SavingsGoalViewModel,
     reportViewModel: ReportViewModel,
     recurringTransactionViewModel: RecurringTransactionViewModel
 ) {
     val state by viewModel.state.collectAsState()
+    val context = LocalContext.current
+    val smsPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission(),
+        onResult = { }
+    )
+    val isAuthenticated = state is SessionState.Authenticated
+
+    LaunchedEffect(isAuthenticated) {
+        if (
+            isAuthenticated &&
+            ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.RECEIVE_SMS
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            smsPermissionLauncher.launch(Manifest.permission.RECEIVE_SMS)
+        }
+    }
 
     when (val currentState = state) {
         SessionState.Loading -> {
@@ -136,6 +172,7 @@ fun SessionRoot(
                 dashboardViewModel = dashboardViewModel,
                 transactionViewModel = transactionViewModel,
                 accountViewModel = accountViewModel,
+                    smsSettingsViewModel = smsSettingsViewModel,
                 budgetViewModel = budgetViewModel,
                 savingsGoalViewModel = savingsGoalViewModel,
                 reportViewModel = reportViewModel,
@@ -147,6 +184,13 @@ fun SessionRoot(
         }
     }
 }
+
+
+
+
+
+
+
 
 
 
